@@ -1,74 +1,22 @@
-import { useEffect, useRef, useState } from 'react';
-import { Animated, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useAuth } from '@/context/AuthContext';
+import { useState } from 'react';
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 type Props = {
-  onLogin: () => void;
   onSignup: () => void;
 };
 
-export default function LoginScreen({ onLogin, onSignup }: Props) {
+export default function LoginScreen({ onSignup }: Props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [focusedInput, setFocusedInput] = useState('');
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(40)).current;
-  const glow1 = useRef(new Animated.Value(0)).current;
-  const glow2 = useRef(new Animated.Value(0)).current;
+  const { login } = useAuth();
 
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 800,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 800,
-        useNativeDriver: true,
-      }),
-    ]).start();
-
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(glow1, { toValue: 1, duration: 3000, useNativeDriver: true }),
-        Animated.timing(glow1, { toValue: 0, duration: 3000, useNativeDriver: true }),
-      ])
-    ).start();
-
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(glow2, { toValue: 1, duration: 4000, useNativeDriver: true }),
-        Animated.timing(glow2, { toValue: 0, duration: 4000, useNativeDriver: true }),
-      ])
-    ).start();
-  }, []);
 
   return (
     <View style={styles.screen}>
-
-      {/* Glow blobs - behind everything */}
-      <Animated.View style={[styles.blob1, {
-        opacity: glow1.interpolate({ inputRange: [0, 1], outputRange: [0.3, 0.6] }),
-        transform: [{ scale: glow1.interpolate({ inputRange: [0, 1], outputRange: [1, 1.3] }) }],
-      }]} pointerEvents="none" />
-
-      <Animated.View style={[styles.blob2, {
-        opacity: glow2.interpolate({ inputRange: [0, 1], outputRange: [0.2, 0.5] }),
-        transform: [{ scale: glow2.interpolate({ inputRange: [0, 1], outputRange: [1, 1.2] }) }],
-      }]} pointerEvents="none" />
-
-      {/* Watermark logo */}
-      <Image
-        source={require('../../assets/expo.icon/logo.png')}
-        style={styles.watermark}
-      />
-
-      {/* Card */}
-      <Animated.View style={[styles.card, {
-        opacity: fadeAnim,
-        transform: [{ translateY: slideAnim }],
-      }]}>
+      <Image source={require('../../assets/expo.icon/logo.png')} style={styles.watermark} />
+      <View style={styles.card}>
 
         <Image
           source={require('../../assets/expo.icon/logo.png')}
@@ -99,15 +47,17 @@ export default function LoginScreen({ onLogin, onSignup }: Props) {
           onBlur={() => setFocusedInput('')}
         />
 
-        <TouchableOpacity style={styles.button} onPress={onLogin}>
+        <TouchableOpacity style={styles.button} onPress={() => {
+          login(email);
+          onSignup();
+        }}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
-
         <TouchableOpacity onPress={onSignup}>
           <Text style={styles.linkText}>Don't have an account? Sign Up</Text>
         </TouchableOpacity>
 
-      </Animated.View>
+      </View>
     </View>
   );
 }
