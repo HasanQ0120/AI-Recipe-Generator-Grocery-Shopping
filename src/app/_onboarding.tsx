@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 type Props = {
   onFinish: () => void;
@@ -40,17 +40,18 @@ export default function OnboardingScreen({ onFinish }: Props) {
   const isReady = diet && cuisine && allergies.length > 0 && skill;
 
   return (
-    <View style={styles.screen}>
-      <View style={styles.blob1} />
-      <View style={styles.blob2} />
-
+    <ImageBackground
+      source={{ uri: 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=800' }}
+      style={styles.screen}
+      blurRadius={6}
+    >
+      <View style={styles.overlay} />
       <ScrollView contentContainerStyle={styles.scroll}>
-        <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
+        <Animated.View style={[styles.card, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
 
           <Text style={styles.title}>One Last Step! 🍽️</Text>
           <Text style={styles.subtitle}>Help us personalize your recipes</Text>
 
-          {/* Diet */}
           <Text style={styles.sectionTitle}>Your Diet</Text>
           <View style={styles.chips}>
             {DIETS.map(item => (
@@ -64,7 +65,6 @@ export default function OnboardingScreen({ onFinish }: Props) {
             ))}
           </View>
 
-          {/* Cuisine */}
           <Text style={styles.sectionTitle}>Favourite Cuisine</Text>
           <View style={styles.chips}>
             {CUISINES.map(item => (
@@ -78,7 +78,6 @@ export default function OnboardingScreen({ onFinish }: Props) {
             ))}
           </View>
 
-          {/* Allergies */}
           <Text style={styles.sectionTitle}>Allergies</Text>
           <View style={styles.chips}>
             {ALLERGIES.map(item => (
@@ -92,7 +91,6 @@ export default function OnboardingScreen({ onFinish }: Props) {
             ))}
           </View>
 
-          {/* Skill Level */}
           <Text style={styles.sectionTitle}>Skill Level</Text>
           <View style={styles.chips}>
             {SKILLS.map(item => (
@@ -115,19 +113,19 @@ export default function OnboardingScreen({ onFinish }: Props) {
 
         </Animated.View>
       </ScrollView>
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#0D0D0D' },
-  blob1: { position: 'absolute', width: 350, height: 350, borderRadius: 175, backgroundColor: '#C1622F', top: -50, left: -100, opacity: 0.3 },
-  blob2: { position: 'absolute', width: 300, height: 300, borderRadius: 150, backgroundColor: '#8B3A1A', bottom: 0, right: -80, opacity: 0.2 },
-  scroll: { padding: 24, paddingTop: 60, paddingLeft: 28 },
+  screen: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  overlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.75)' },
+  scroll: { flexGrow: 1, justifyContent: 'center', padding: 24, width: '100%' },
+  card: { width: '100%', maxWidth: 400, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 24, padding: 28, borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)', alignSelf: 'center' },
   title: { fontSize: 28, fontWeight: 'bold', color: '#FFFFFF', marginBottom: 8, textAlign: 'center' },
-  subtitle: { fontSize: 14, color: '#888', marginBottom: 32, textAlign: 'center' },
+  subtitle: { fontSize: 14, color: '#888', marginBottom: 24, textAlign: 'center' },
   sectionTitle: { fontSize: 16, fontWeight: 'bold', color: '#FFFFFF', marginBottom: 12, marginTop: 8 },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 24 },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 20 },
   chip: { paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)' },
   chipSelected: { backgroundColor: '#C1622F', borderColor: '#C1622F' },
   chipText: { color: '#888', fontSize: 14 },

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import { Animated, ImageBackground, StyleSheet, Text, View } from 'react-native';
 
 type Props = {
   onFinish: () => void;
@@ -9,20 +9,8 @@ export default function SplashScreen({ onFinish }: Props) {
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const textFade = useRef(new Animated.Value(0)).current;
-  const blob1 = useRef(new Animated.Value(0)).current;
-  const blob2 = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    Animated.loop(Animated.sequence([
-      Animated.timing(blob1, { toValue: 1, duration: 2000, useNativeDriver: true }),
-      Animated.timing(blob1, { toValue: 0, duration: 2000, useNativeDriver: true }),
-    ])).start();
-
-    Animated.loop(Animated.sequence([
-      Animated.timing(blob2, { toValue: 1, duration: 3000, useNativeDriver: true }),
-      Animated.timing(blob2, { toValue: 0, duration: 3000, useNativeDriver: true }),
-    ])).start();
-
     Animated.sequence([
       Animated.parallel([
         Animated.spring(scaleAnim, {
@@ -52,16 +40,12 @@ export default function SplashScreen({ onFinish }: Props) {
   }, []);
 
   return (
-    <View style={styles.screen}>
-      <Animated.View style={[styles.blob1, {
-        opacity: blob1.interpolate({ inputRange: [0, 1], outputRange: [0.3, 0.6] }),
-        transform: [{ scale: blob1.interpolate({ inputRange: [0, 1], outputRange: [1, 1.3] }) }],
-      }]} />
-      <Animated.View style={[styles.blob2, {
-        opacity: blob2.interpolate({ inputRange: [0, 1], outputRange: [0.2, 0.5] }),
-        transform: [{ scale: blob2.interpolate({ inputRange: [0, 1], outputRange: [1, 1.2] }) }],
-      }]} />
-
+    <ImageBackground
+      source={{ uri: 'https://images.unsplash.com/photo-1543353071-873f17a7a088?w=800' }}
+      style={styles.screen}
+      blurRadius={6}
+    >
+      <View style={styles.overlay} />
       <Animated.View style={{ opacity: fadeAnim, alignItems: 'center' }}>
         <Animated.Image
           source={require('../../assets/expo.icon/logo.png')}
@@ -72,34 +56,23 @@ export default function SplashScreen({ onFinish }: Props) {
           <Text style={styles.tagline}>Cook Smarter with AI</Text>
         </Animated.View>
       </Animated.View>
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#0D0D0D',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  blob1: {
+  overlay: {
     position: 'absolute',
-    width: 350,
-    height: 350,
-    borderRadius: 175,
-    backgroundColor: '#C1622F',
-    top: -50,
-    left: -100,
-  },
-  blob2: {
-    position: 'absolute',
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    backgroundColor: '#8B3A1A',
+    top: 0,
+    left: 0,
+    right: 0,
     bottom: 0,
-    right: -80,
+    backgroundColor: 'rgba(0,0,0,0.75)',
   },
   logo: {
     width: 120,
