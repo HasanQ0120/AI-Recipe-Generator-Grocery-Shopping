@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 
 type Props = {
   onFinish: () => void;
@@ -8,9 +8,21 @@ type Props = {
 export default function SplashScreen({ onFinish }: Props) {
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const glowAnim = useRef(new Animated.Value(0)).current;
+  const textFade = useRef(new Animated.Value(0)).current;
+  const blob1 = useRef(new Animated.Value(0)).current;
+  const blob2 = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    Animated.loop(Animated.sequence([
+      Animated.timing(blob1, { toValue: 1, duration: 2000, useNativeDriver: true }),
+      Animated.timing(blob1, { toValue: 0, duration: 2000, useNativeDriver: true }),
+    ])).start();
+
+    Animated.loop(Animated.sequence([
+      Animated.timing(blob2, { toValue: 1, duration: 3000, useNativeDriver: true }),
+      Animated.timing(blob2, { toValue: 0, duration: 3000, useNativeDriver: true }),
+    ])).start();
+
     Animated.sequence([
       Animated.parallel([
         Animated.spring(scaleAnim, {
@@ -25,13 +37,12 @@ export default function SplashScreen({ onFinish }: Props) {
           useNativeDriver: true,
         }),
       ]),
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(glowAnim, { toValue: 1, duration: 1000, useNativeDriver: true }),
-          Animated.timing(glowAnim, { toValue: 0, duration: 1000, useNativeDriver: true }),
-        ]),
-        { iterations: 2 }
-      ),
+      Animated.timing(textFade, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+      Animated.delay(1500),
       Animated.timing(fadeAnim, {
         toValue: 0,
         duration: 600,
@@ -42,17 +53,25 @@ export default function SplashScreen({ onFinish }: Props) {
 
   return (
     <View style={styles.screen}>
-      <Animated.View style={[styles.glow, {
-        opacity: glowAnim.interpolate({ inputRange: [0, 1], outputRange: [0.3, 0.7] }),
-        transform: [{ scale: glowAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.4] }) }],
+      <Animated.View style={[styles.blob1, {
+        opacity: blob1.interpolate({ inputRange: [0, 1], outputRange: [0.3, 0.6] }),
+        transform: [{ scale: blob1.interpolate({ inputRange: [0, 1], outputRange: [1, 1.3] }) }],
       }]} />
-      <Animated.Image
-        source={require('../../assets/expo.icon/logo.png')}
-        style={[styles.logo, {
-          opacity: fadeAnim,
-          transform: [{ scale: scaleAnim }],
-        }]}
-      />
+      <Animated.View style={[styles.blob2, {
+        opacity: blob2.interpolate({ inputRange: [0, 1], outputRange: [0.2, 0.5] }),
+        transform: [{ scale: blob2.interpolate({ inputRange: [0, 1], outputRange: [1, 1.2] }) }],
+      }]} />
+
+      <Animated.View style={{ opacity: fadeAnim, alignItems: 'center' }}>
+        <Animated.Image
+          source={require('../../assets/expo.icon/logo.png')}
+          style={[styles.logo, { transform: [{ scale: scaleAnim }] }]}
+        />
+        <Animated.View style={{ opacity: textFade, alignItems: 'center' }}>
+          <Text style={styles.appName}>ChefAI</Text>
+          <Text style={styles.tagline}>Cook Smarter with AI</Text>
+        </Animated.View>
+      </Animated.View>
     </View>
   );
 }
@@ -64,16 +83,40 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  glow: {
+  blob1: {
+    position: 'absolute',
+    width: 350,
+    height: 350,
+    borderRadius: 175,
+    backgroundColor: '#C1622F',
+    top: -50,
+    left: -100,
+  },
+  blob2: {
     position: 'absolute',
     width: 300,
     height: 300,
     borderRadius: 150,
-    backgroundColor: '#C1622F',
+    backgroundColor: '#8B3A1A',
+    bottom: 0,
+    right: -80,
   },
   logo: {
-    width: 150,
-    height: 150,
+    width: 120,
+    height: 120,
     resizeMode: 'contain',
+    marginBottom: 24,
+  },
+  appName: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    letterSpacing: 2,
+  },
+  tagline: {
+    fontSize: 14,
+    color: '#C1622F',
+    marginTop: 8,
+    letterSpacing: 1,
   },
 });
