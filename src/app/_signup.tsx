@@ -12,7 +12,7 @@ export default function SignupScreen({ onSignup, onBack }: Props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [focusedInput, setFocusedInput] = useState('');
-  const { signup } = useAuth();
+  const { signup, loading, error } = useAuth();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(40)).current;
   const glow1 = useRef(new Animated.Value(0)).current;
@@ -50,6 +50,9 @@ export default function SignupScreen({ onSignup, onBack }: Props) {
         <Image source={require('../../assets/expo.icon/logo.png')} style={styles.logoSmall} />
         <Text style={styles.title}>Create Account</Text>
         <Text style={styles.subtitle}>Sign up to get started</Text>
+
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
         <TextInput
           style={[styles.input, focusedInput === 'name' && styles.inputFocused]}
           placeholder="Full Name"
@@ -79,10 +82,10 @@ export default function SignupScreen({ onSignup, onBack }: Props) {
           onBlur={() => setFocusedInput('')}
         />
         <TouchableOpacity style={styles.button} onPress={() => {
-          signup(name, email);
+          signup(name, email, password);
           onSignup();
         }}>
-          <Text style={styles.buttonText}>Create Account</Text>
+          <Text style={styles.buttonText}>{loading ? 'Creating...' : 'Create Account'}</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={onBack}>
           <Text style={styles.linkText}>Already have an account? Login</Text>
@@ -101,6 +104,7 @@ const styles = StyleSheet.create({
   logoSmall: { width: 50, height: 50, resizeMode: 'contain', alignSelf: 'center', marginBottom: 16 },
   title: { fontSize: 28, fontWeight: 'bold', color: '#FFFFFF', marginBottom: 6, textAlign: 'center' },
   subtitle: { fontSize: 14, color: '#888', marginBottom: 28, textAlign: 'center' },
+  errorText: { color: '#FF6B6B', textAlign: 'center', marginBottom: 12, fontSize: 13 },
   input: { backgroundColor: 'rgba(255,255,255,0.07)', borderRadius: 12, padding: 14, color: '#FFFFFF', fontSize: 14, marginBottom: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
   inputFocused: { borderColor: '#C1622F', shadowColor: '#C1622F', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.9, shadowRadius: 12, elevation: 10 },
   button: { backgroundColor: '#C1622F', borderRadius: 12, padding: 15, alignItems: 'center', marginBottom: 12, marginTop: 8, shadowColor: '#C1622F', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.5, shadowRadius: 12, elevation: 8 },
