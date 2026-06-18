@@ -1,22 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import HomeDashboard from '../screens/HomeDashboard';
 
-export default function SplashScreen() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>AI Recipe App</Text>
-    </View>
-  );
+export default function App() {
+  return <HomeDashboard />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#1C1612',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    color: '#F5EFE6',
-    fontSize: 32,
-  },
-});
