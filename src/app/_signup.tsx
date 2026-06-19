@@ -12,6 +12,7 @@ export default function SignupScreen({ onSignup, onBack }: Props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [focusedInput, setFocusedInput] = useState('');
+  const [validationError, setValidationError] = useState('');
   const { signup, loading, error } = useAuth();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(40)).current;
@@ -22,6 +23,44 @@ export default function SignupScreen({ onSignup, onBack }: Props) {
       Animated.timing(slideAnim, { toValue: 0, duration: 800, useNativeDriver: true }),
     ]).start();
   }, []);
+
+const handleSignup = () => {
+    if (!name) {
+      setValidationError('Please enter your full name!');
+      return;
+    }
+    if (name.length < 3) {
+      setValidationError('Name must be at least 3 characters!');
+      return;
+    }
+    if (!email) {
+      setValidationError('Please enter your email!');
+      return;
+    }
+    if (!email.includes('@') || !email.includes('.')) {
+      setValidationError('Please enter a valid email!');
+      return;
+    }
+    if (!password) {
+      setValidationError('Please enter a password!');
+      return;
+    }
+    if (password.length < 6) {
+      setValidationError('Password must be at least 6 characters!');
+      return;
+    }
+    if (!/[A-Z]/.test(password)) {
+      setValidationError('Password must have at least 1 capital letter!');
+      return;
+    }
+    if (!/[0-9]/.test(password)) {
+      setValidationError('Password must have at least 1 number!');
+      return;
+    }
+    setValidationError('');
+    signup(name, email, password);
+    onSignup();
+  };
 
   return (
     <ImageBackground
@@ -35,6 +74,7 @@ export default function SignupScreen({ onSignup, onBack }: Props) {
         <Text style={styles.title}>Create Account</Text>
         <Text style={styles.subtitle}>Sign up to get started</Text>
 
+        {validationError ? <Text style={styles.errorText}>{validationError}</Text> : null}
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
         <TextInput
@@ -65,10 +105,7 @@ export default function SignupScreen({ onSignup, onBack }: Props) {
           onFocus={() => setFocusedInput('password')}
           onBlur={() => setFocusedInput('')}
         />
-        <TouchableOpacity style={styles.button} onPress={() => {
-          signup(name, email, password);
-          onSignup();
-        }}>
+        <TouchableOpacity style={styles.button} onPress={handleSignup}>
           <Text style={styles.buttonText}>{loading ? 'Creating...' : 'Create Account'}</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={onBack}>

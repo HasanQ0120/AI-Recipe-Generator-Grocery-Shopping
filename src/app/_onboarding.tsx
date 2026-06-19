@@ -6,13 +6,13 @@ type Props = {
 };
 
 const DIETS = ['Vegan', 'Vegetarian', 'Non-Veg'];
-const CUISINES = ['Italian', 'Asian', 'Arabic', 'Mexican', 'Any'];
+const CUISINES = ['Desi', 'Arabic', 'Italian', 'Asian', 'Mexican', 'Any'];
 const ALLERGIES = ['Nuts', 'Dairy', 'Gluten', 'None'];
 const SKILLS = ['Beginner', 'Intermediate', 'Pro Chef'];
 
 export default function OnboardingScreen({ onFinish }: Props) {
   const [diet, setDiet] = useState('');
-  const [cuisine, setCuisine] = useState('');
+  const [cuisine, setCuisine] = useState<string[]>([]);
   const [allergies, setAllergies] = useState<string[]>([]);
   const [skill, setSkill] = useState('');
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -24,6 +24,12 @@ export default function OnboardingScreen({ onFinish }: Props) {
       Animated.timing(slideAnim, { toValue: 0, duration: 800, useNativeDriver: true }),
     ]).start();
   }, []);
+
+  const toggleCuisine = (item: string) => {
+    setCuisine(prev =>
+      prev.includes(item) ? prev.filter(c => c !== item) : [...prev, item]
+    );
+  };
 
   const toggleAllergy = (item: string) => {
     if (item === 'None') {
@@ -37,7 +43,7 @@ export default function OnboardingScreen({ onFinish }: Props) {
     );
   };
 
-  const isReady = diet && cuisine && allergies.length > 0 && skill;
+  const isReady = diet && cuisine.length > 0 && allergies.length > 0 && skill;
 
   return (
     <ImageBackground
@@ -65,20 +71,20 @@ export default function OnboardingScreen({ onFinish }: Props) {
             ))}
           </View>
 
-          <Text style={styles.sectionTitle}>Favourite Cuisine</Text>
+          <Text style={styles.sectionTitle}>Favourite Cuisine <Text style={styles.hint}></Text></Text>
           <View style={styles.chips}>
             {CUISINES.map(item => (
               <TouchableOpacity
                 key={item}
-                style={[styles.chip, cuisine === item && styles.chipSelected]}
-                onPress={() => setCuisine(item)}
+                style={[styles.chip, cuisine.includes(item) && styles.chipSelected]}
+                onPress={() => toggleCuisine(item)}
               >
-                <Text style={[styles.chipText, cuisine === item && styles.chipTextSelected]}>{item}</Text>
+                <Text style={[styles.chipText, cuisine.includes(item) && styles.chipTextSelected]}>{item}</Text>
               </TouchableOpacity>
             ))}
           </View>
 
-          <Text style={styles.sectionTitle}>Allergies</Text>
+          <Text style={styles.sectionTitle}>Allergies <Text style={styles.hint}></Text></Text>
           <View style={styles.chips}>
             {ALLERGIES.map(item => (
               <TouchableOpacity
@@ -125,6 +131,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 28, fontWeight: 'bold', color: '#FFFFFF', marginBottom: 8, textAlign: 'center' },
   subtitle: { fontSize: 14, color: '#888', marginBottom: 24, textAlign: 'center' },
   sectionTitle: { fontSize: 16, fontWeight: 'bold', color: '#FFFFFF', marginBottom: 12, marginTop: 8 },
+  hint: { fontSize: 12, color: '#888', fontWeight: 'normal' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 20 },
   chip: { paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)' },
   chipSelected: { backgroundColor: '#C1622F', borderColor: '#C1622F' },

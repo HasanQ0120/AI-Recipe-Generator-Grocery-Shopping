@@ -10,6 +10,7 @@ export default function LoginScreen({ onSignup }: Props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [focusedInput, setFocusedInput] = useState('');
+  const [validationError, setValidationError] = useState('');
   const { login, loading, error } = useAuth();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(40)).current;
@@ -20,6 +21,23 @@ export default function LoginScreen({ onSignup }: Props) {
       Animated.timing(slideAnim, { toValue: 0, duration: 800, useNativeDriver: true }),
     ]).start();
   }, []);
+
+  const handleLogin = () => {
+    if (!email) {
+      setValidationError('Please enter your email!');
+      return;
+    }
+    if (!password) {
+      setValidationError('Please enter your password!');
+      return;
+    }
+    if (password.length < 6) {
+      setValidationError('Password must be at least 6 characters!');
+      return;
+    }
+    setValidationError('');
+    login(email, password);
+  };
 
   return (
     <ImageBackground
@@ -33,6 +51,7 @@ export default function LoginScreen({ onSignup }: Props) {
         <Text style={styles.title}>Welcome Back</Text>
         <Text style={styles.subtitle}>Sign in to continue</Text>
 
+        {validationError ? <Text style={styles.errorText}>{validationError}</Text> : null}
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
         <TextInput
@@ -54,7 +73,7 @@ export default function LoginScreen({ onSignup }: Props) {
           onFocus={() => setFocusedInput('password')}
           onBlur={() => setFocusedInput('')}
         />
-        <TouchableOpacity style={styles.button} onPress={() => login(email, password)}>
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>{loading ? 'Logging in...' : 'Login'}</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={onSignup}>
