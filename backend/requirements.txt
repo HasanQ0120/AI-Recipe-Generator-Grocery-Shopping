@@ -1,3 +1,3 @@
-fastapi
-uvicorn
-firebase-admin
+fastapi          # the web framework used to build your API (handles routes like /signup, /pantry, etc.)
+uvicorn          # the server that actually runs your FastAPI app and listens for requests
+firebase-admin   # lets Python connect to Firebase (used for creating/managing users)
